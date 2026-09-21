@@ -1,0 +1,7 @@
+{
+  "name": "Deetrend Lending",
+  "description": "Modern lending management system for Deetrend Global Enterprise. Handles public loan applications, admin review, loan configuration, legal agreement generation, borrower electronic consent, loan portfolio tracking, and amortization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

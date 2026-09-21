@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Deetrend Lending</string>
+    <string name="notification_channel_name">Loan Reminders</string>
+    <string name="notification_channel_desc">Upcoming loan installment due dates and alerts</string>
+</resources>

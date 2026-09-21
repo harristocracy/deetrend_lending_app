@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deetrend Global Enterprise - Loan Portal</title>
+  <!-- Google Fonts & Tailwind CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase App & Firestore SDKs (v9 Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+  <!-- Header / Navigation -->
+  <header class="bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-800 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center font-bold text-xl text-emerald-300 shadow-inner">
+          D
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold tracking-tight">Deetrend Global Enterprise</h1>
+          <p class="text-xs text-emerald-300/80 font-medium">Borrower Self-Service & Digital Agreement Portal</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="showTab('apply')" id="tab-btn-apply" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition bg-emerald-500 text-white shadow-sm">
+          Apply for Loan
+        </button>
+        <button onclick="showTab('sign')" id="tab-btn-sign" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200">
+          Sign Agreement
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 flex-grow w-full">
+
+    <!-- TAB 1: LOAN APPLICATION FORM -->
+    <section id="section-apply" class="space-y-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+        <div class="border-b border-slate-100 pb-5 mb-6">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60 mb-2">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Official Online Application
+          </span>
+          <h2 class="text-2xl font-extrabold text-slate-900">Borrower Loan Application</h2>
+          <p class="text-sm text-slate-500 mt-1">Submit your details directly to the Deetrend approval system. Standard flat rate: 7% monthly interest.</p>
+        </div>
+
+        <form id="loanApplicationForm" onsubmit="handleApplicationSubmit(event)" class="space-y-6">
+          
+          <!-- Personal Information -->
+          <div>
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">1. Personal & Contact Details</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Full Legal Name *</label>
+                <input type="text" id="fullName" required placeholder="e.g., Jane Ngozi Okoye"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none transition">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Phone Number (WhatsApp) *</label>
+                <input type="tel" id="phone" required placeholder="e.g., 08012345678"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none transition">
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Occupation Type *</label>
+                <select id="occupationType" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none transition bg-white">
+                  <option value="Salary Earner">Salary Earner</option>
+                  <option value="Self-Employed / Business Owner">Self-Employed / Business Owner</option>
+                  <option value="Contractor / Artisan">Contractor / Artisan</option>
+                  <option value="Civil Servant">Civil Servant</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Work / Business Address *</label>
+                <input type="text" id="workLocation" required placeholder="e.g., Suite 12, Ikeja Plaza, Lagos"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none transition">
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Residential Home Address *</label>
+              <input type="text" id="homeAddress" required placeholder="e.g., 14 Adeleke Crescent, Victoria Island"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none transition">
+            </div>
+          </div>
+
+          <!-- Loan Request Information -->
+          <div class="pt-4 border-t border-slate-100">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">2. Loan Specifications</h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Amount Requested (₦) *</label>
+                <input type="number" id="amountRequested" required min="5000" step="1000" placeholder="e.g., 200000" oninput="calculateEstimate()"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none transition">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Tenure / Duration *</label>
+                <select id="tenureMonths" onchange="calculateEstimate()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none transition bg-white">
+                  <option value="1">1 Month</option>
+                  <option value="2">2 Months</option>
+                  <option value="3">3 Months</option>
+                  <option value="4">4 Months</option>
+                  <option value="6">6 Months</option>
+                  <option value="12">12 Months</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Real-time calculator summary card -->
+            <div id="calculatorCard" class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div>
+                <span class="text-slate-500">Monthly Interest (7% Flat):</span>
+                <span id="estInterest" class="font-bold text-slate-800 ml-1">₦0.00</span>
+              </div>
+              <div>
+                <span class="text-slate-500">Total Repayment:</span>
+                <span id="estTotal" class="font-bold text-emerald-700 ml-1 text-sm">₦0.00</span>
+              </div>
+              <div>
+                <span class="text-slate-500">Repayment Plan:</span>
+                <span class="font-semibold text-slate-800 ml-1">Monthly</span>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Loan Purpose *</label>
+              <input type="text" id="loanPurpose" required placeholder="e.g., Working capital for store inventory expansion"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none transition">
+            </div>
+
+            <div class="mt-4">
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Collateral / Security Provided (Optional)</label>
+              <input type="text" id="collateralDescription" placeholder="e.g., Vehicle Logbook / Land Document / Appliance Serial No."
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none transition">
+            </div>
+          </div>
+
+          <!-- Disbursement Bank Details -->
+          <div class="pt-4 border-t border-slate-100">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">3. Disbursement Bank Details</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Bank Name *</label>
+                <input type="text" id="bankName" required placeholder="e.g., Access Bank, GTBank"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none transition">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Account Number *</label>
+                <input type="text" id="accountNumber" required maxlength="10" placeholder="e.g., 0123456789"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none transition">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Account Name *</label>
+                <input type="text" id="accountName" required placeholder="e.g., Jane Ngozi Okoye"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none transition">
+              </div>
+            </div>
+          </div>
+
+          <!-- Agreement to terms checkbox -->
+          <div class="pt-2">
+            <label class="flex items-start gap-3 cursor-pointer">
+              <input type="checkbox" required class="mt-1 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300">
+              <span class="text-xs text-slate-600 leading-relaxed">
+                I hereby affirm that all information provided above is genuine, true, and correct. I authorize Deetrend Global Enterprise to verify credit background and store my application records.
+              </span>
+            </label>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="btnSubmitApp"
+            class="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
+            <span>Submit Loan Application</span>
+          </button>
+        </form>
+
+        <!-- Application Success Alert -->
+        <div id="appSuccessAlert" class="hidden mt-6 p-6 rounded-2xl bg-emerald-50 border border-emerald-200">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xl flex-shrink-0">
+              ✓
+            </div>
+            <div>
+              <h4 class="text-lg font-bold text-emerald-900">Application Successfully Submitted!</h4>
+              <p class="text-sm text-emerald-800 mt-1">
+                Your application has been received in the Deetrend database. Your Application ID is:
+                <strong id="resAppId" class="text-slate-900 font-mono text-base px-2 py-0.5 bg-white rounded border border-emerald-300 ml-1"></strong>
+              </p>
+              <p class="text-xs text-emerald-700 mt-2">
+                An administrator will review your submission shortly. Once approved, you will receive your Promissory Note link to execute your electronic signature.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: SIGN LOAN AGREEMENT / PROMISSORY NOTE -->
+    <section id="section-sign" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+        <div class="border-b border-slate-100 pb-5 mb-6">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60 mb-2">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            Secure Promissory Note Consent
+          </span>
+          <h2 class="text-2xl font-extrabold text-slate-900">Electronic Agreement & Signature</h2>
+          <p class="text-sm text-slate-500 mt-1">Review the binding Promissory Note and execute your electronic consent under Nigerian Evidence Act Section 93.</p>
+        </div>
+
+        <!-- Token or Agreement Lookup -->
+        <div id="lookupContainer" class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 mb-6">
+          <label class="block text-xs font-bold text-slate-700 mb-1">Enter Agreement ID or Loan ID</label>
+          <div class="flex gap-2">
+            <input type="text" id="agreementInput" placeholder="e.g., AGR-2026-0001 or DGE-2026-0001"
+              class="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none uppercase font-mono">
+            <button onclick="fetchAgreement()" class="px-5 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-sm shadow-sm transition">
+              Find Agreement
+            </button>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">Tip: You can also open links directly using <code>?id=YOUR_AGREEMENT_ID</code></p>
+        </div>
+
+        <!-- Agreement Details Display -->
+        <div id="agreementDetailsContainer" class="hidden space-y-6">
+          <div class="p-5 rounded-xl bg-emerald-950 text-white border border-emerald-900 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <span class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">Document Ref</span>
+              <h3 id="dispAgrId" class="text-lg font-mono font-bold text-white"></h3>
+              <p id="dispBorrowerName" class="text-sm text-emerald-200 mt-0.5"></p>
+            </div>
+            <div id="dispConsentBadge"></div>
+          </div>
+
+          <!-- Legal Text Area -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Promissory Note Agreement Terms</label>
+            <div id="dispAgreementText" class="w-full h-80 overflow-y-auto p-4 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-700 font-mono whitespace-pre-wrap leading-relaxed"></div>
+          </div>
+
+          <!-- Signature Box for Pending Status -->
+          <div id="signatureSection" class="p-5 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-4">
+            <h4 class="text-sm font-bold text-amber-900 flex items-center gap-2">
+              <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+              Execute Electronic Signature
+            </h4>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Type Full Legal Name as Electronic Signature *</label>
+              <input type="text" id="signLegalName" placeholder="Must match your legal borrower name"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm outline-none bg-white">
+            </div>
+
+            <label class="flex items-start gap-3 cursor-pointer">
+              <input type="checkbox" id="chkSignConsent" class="mt-1 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300">
+              <span class="text-xs text-slate-700 leading-relaxed">
+                I hereby declare that I have read, understood, and agreed to all terms of this Promissory Note. By typing my name, I intend to sign and create a legally binding debt obligation in favor of Deetrend Global Enterprise.
+              </span>
+            </label>
+
+            <button onclick="submitSignature()" id="btnSubmitSignature"
+              class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2">
+              Sign & Confirm Agreement
+            </button>
+          </div>
+
+          <!-- Signed Confirmation State -->
+          <div id="alreadySignedSection" class="hidden p-5 rounded-2xl bg-emerald-50 border border-emerald-200">
+            <h4 class="text-sm font-bold text-emerald-900 flex items-center gap-2">
+              <svg class="w-4 h-4 text-emerald-700" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+              Agreement Legally Executed
+            </h4>
+            <p id="signedTimestampDetails" class="text-xs text-emerald-800 mt-1"></p>
+            <div class="mt-4 flex gap-3">
+              <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-white border border-emerald-300 text-emerald-800 font-semibold text-xs shadow-sm hover:bg-emerald-100 transition">
+                Print / Save PDF Copy
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 text-center text-xs">
+    <div class="max-w-5xl mx-auto px-4">
+      <p class="font-medium text-slate-300">Deetrend Global Enterprise &bull; Licensed Micro-Lending & Credit Services</p>
+      <p class="mt-1 text-slate-500">&copy; 2026 Deetrend Global Enterprise. All rights reserved. Secured by Google Cloud Firebase.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase Script Logic -->
+  <script>
+    // Firebase Configuration from google-services.json
+    const firebaseConfig = {
+      projectId: "deetrend-global-enterprise",
+      apiKey: "AIzaSyDlNUIxw5ZogVYhOnqX2eGb9-JVcn94zpo",
+      storageBucket: "deetrend-global-enterprise.firebasestorage.app",
+      appId: "1:87297905743:android:44ec35992ebab595c3c63a"
+    };
+
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    let currentLoadedAgreementDoc = null;
+
+    // Tab Switching
+    function showTab(tab) {
+      const applySec = document.getElementById('section-apply');
+      const signSec = document.getElementById('section-sign');
+      const btnApply = document.getElementById('tab-btn-apply');
+      const btnSign = document.getElementById('tab-btn-sign');
+
+      if (tab === 'apply') {
+        applySec.classList.remove('hidden');
+        signSec.classList.add('hidden');
+        btnApply.className = "px-3.5 py-1.5 rounded-lg text-sm font-semibold transition bg-emerald-500 text-white shadow-sm";
+        btnSign.className = "px-3.5 py-1.5 rounded-lg text-sm font-semibold transition bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200";
+      } else {
+        applySec.classList.add('hidden');
+        signSec.classList.remove('hidden');
+        btnSign.className = "px-3.5 py-1.5 rounded-lg text-sm font-semibold transition bg-emerald-500 text-white shadow-sm";
+        btnApply.className = "px-3.5 py-1.5 rounded-lg text-sm font-semibold transition bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200";
+      }
+    }
+
+    // Auto calculate interest
+    function calculateEstimate() {
+      const amount = parseFloat(document.getElementById('amountRequested').value) || 0;
+      const months = parseInt(document.getElementById('tenureMonths').value) || 1;
+      const monthlyInterest = amount * 0.07;
+      const totalRepay = amount + (monthlyInterest * months);
+
+      document.getElementById('estInterest').textContent = '₦' + monthlyInterest.toLocaleString('en-NG', { minimumFractionDigits: 2 });
+      document.getElementById('estTotal').textContent = '₦' + totalRepay.toLocaleString('en-NG', { minimumFractionDigits: 2 });
+    }
+
+    // Handle Application Submit
+    async function handleApplicationSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitApp');
+      btn.disabled = true;
+      btn.innerHTML = 'Submitting Application...';
+
+      try {
+        const year = new Date().getFullYear();
+        const rand = Math.floor(1000 + Math.random() * 9000);
+        const appId = `APP-${year}-${rand}`;
+
+        const amount = parseFloat(document.getElementById('amountRequested').value);
+        const tenure = parseInt(document.getElementById('tenureMonths').value);
+        const fullName = document.getElementById('fullName').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const occ = document.getElementById('occupationType').value;
+        const home = document.getElementById('homeAddress').value.trim();
+        const work = document.getElementById('workLocation').value.trim();
+        const purpose = document.getElementById('loanPurpose').value.trim();
+        const collateral = document.getElementById('collateralDescription').value.trim();
+        const bank = document.getElementById('bankName').value.trim();
+        const accNum = document.getElementById('accountNumber').value.trim();
+        const accName = document.getElementById('accountName').value.trim();
+
+        const applicationData = {
+          application_id: appId,
+          borrower_id: Date.now(),
+          full_name: fullName,
+          phone_number: phone,
+          occupation_type: occ,
+          home_address: home,
+          work_or_business_location: work,
+          amount_requested: amount,
+          loan_purpose: purpose,
+          repayment_plan: "Monthly",
+          collateral_provided: collateral.length > 0,
+          collateral_description: collateral,
+          loan_tenure_months: tenure,
+          account_name: accName,
+          bank_name: bank,
+          account_number: accNum,
+          application_status: "Pending",
+          submitted_at: Date.now(),
+          created_at: Date.now(),
+          updated_at: Date.now()
+        };
+
+        // Save to Firestore
+        await db.collection('loan_applications').doc(appId).set(applicationData);
+
+        // Also save or update borrower record in Firestore
+        const borrowerData = {
+          borrower_id: applicationData.borrower_id,
+          full_name: fullName,
+          phone_number: phone,
+          occupation_type: occ,
+          home_address: home,
+          work_or_business_location: work,
+          account_name: accName,
+          bank_name: bank,
+          account_number: accNum,
+          created_at: Date.now(),
+          updated_at: Date.now()
+        };
+        await db.collection('borrowers').doc(phone).set(borrowerData, { merge: true });
+
+        // Show Success
+        document.getElementById('loanApplicationForm').reset();
+        document.getElementById('loanApplicationForm').classList.add('hidden');
+        document.getElementById('resAppId').textContent = appId;
+        document.getElementById('appSuccessAlert').classList.remove('hidden');
+
+      } catch (err) {
+        alert("Submission failed: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Submit Loan Application';
+      }
+    }
+
+    // Fetch Agreement
+    async function fetchAgreement(idToSearch) {
+      const id = (idToSearch || document.getElementById('agreementInput').value || '').trim();
+      if (!id) return alert("Please enter an Agreement ID or Loan ID");
+
+      try {
+        let docSnap = await db.collection('loan_agreements').doc(id).get();
+        if (!docSnap.exists) {
+          // Search by loan_id
+          const qSnap = await db.collection('loan_agreements').where('loan_id', '==', id).get();
+          if (!qSnap.empty) {
+            docSnap = qSnap.docs[0];
+          }
+        }
+
+        if (!docSnap.exists) {
+          return alert("No agreement found with ID: " + id);
+        }
+
+        currentLoadedAgreementDoc = docSnap;
+        const data = docSnap.data();
+
+        document.getElementById('agreementDetailsContainer').classList.remove('hidden');
+        document.getElementById('dispAgrId').textContent = data.agreement_id || docSnap.id;
+        document.getElementById('dispBorrowerName').textContent = 'Borrower: ' + (data.borrower_name || 'N/A');
+        document.getElementById('dispAgreementText').textContent = data.agreement_content || 'No content provided.';
+
+        const isAgreed = data.consent_status === 'Agreed';
+        const badge = document.getElementById('dispConsentBadge');
+        if (isAgreed) {
+          badge.innerHTML = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white">Status: Confirmed / Agreed</span>';
+          document.getElementById('signatureSection').classList.add('hidden');
+          document.getElementById('alreadySignedSection').classList.remove('hidden');
+          const dateStr = data.consent_timestamp ? new Date(data.consent_timestamp).toLocaleString() : 'Recently';
+          document.getElementById('signedTimestampDetails').textContent = `Signed by ${data.signature_consent_data || data.borrower_name} on ${dateStr}. Legally binding under Nigerian Law.`;
+        } else {
+          badge.innerHTML = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-400 text-amber-950">Status: Pending Borrower Signature</span>';
+          document.getElementById('signatureSection').classList.remove('hidden');
+          document.getElementById('alreadySignedSection').classList.add('hidden');
+          document.getElementById('signLegalName').value = data.borrower_name || '';
+        }
+
+      } catch (err) {
+        alert("Error fetching agreement: " + err.message);
+      }
+    }
+
+    // Submit Signature
+    async function submitSignature() {
+      if (!currentLoadedAgreementDoc) return;
+      const name = document.getElementById('signLegalName').value.trim();
+      const agreed = document.getElementById('chkSignConsent').checked;
+
+      if (!name) return alert("Please type your legal name to execute the signature.");
+      if (!agreed) return alert("Please check the confirmation box to affirm your agreement.");
+
+      const btn = document.getElementById('btnSubmitSignature');
+      btn.disabled = true;
+      btn.innerHTML = 'Submitting Signature...';
+
+      try {
+        const updateData = {
+          consent_status: 'Agreed',
+          signature_consent_data: name,
+          consent_timestamp: Date.now(),
+          updated_at: Date.now()
+        };
+
+        await currentLoadedAgreementDoc.ref.update(updateData);
+        alert("Thank you! Your signature has been legally recorded.");
+        fetchAgreement(currentLoadedAgreementDoc.id);
+
+      } catch (err) {
+        alert("Failed to submit signature: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Sign & Confirm Agreement';
+      }
+    }
+
+    // Auto load if query parameter ?id=... is present
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const agId = urlParams.get('id') || urlParams.get('agreement');
+      if (agId) {
+        showTab('sign');
+        document.getElementById('agreementInput').value = agId;
+        fetchAgreement(agId);
+      }
+    });
+  </script>
+</body>
+</html>
