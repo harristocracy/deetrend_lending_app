@@ -351,7 +351,7 @@
     function calculateEstimate() {
       const amount = parseFloat(document.getElementById('amountRequested').value) || 0;
       const months = parseInt(document.getElementById('tenureMonths').value) || 1;
-      const monthlyInterest = amount * 0.07;
+      const monthlyInterest = amount * 0.10;
       const totalRepay = amount + (monthlyInterest * months);
 
       document.getElementById('estInterest').textContent = '₦' + monthlyInterest.toLocaleString('en-NG', { minimumFractionDigits: 2 });
